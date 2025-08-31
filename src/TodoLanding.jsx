@@ -3,10 +3,12 @@ import AddTask from "./components/AddTask";
 import TaskList from "./components/TaskList";
 import DarkModeToggle from "./components/DarkModeToggle";
 import useLocalStorage from "./hooks/useLocalStorage";
+import Navbar from "./components/Navbar";
 
 export default function TodoLanding() {
   const [tasks, setTasks] = useLocalStorage("todo-tasks", []);
   const [filter, setFilter] = useState('All');
+  const [showLibrary, setShowLibrary] = useState(false);
 
   const filteredTasks = tasks.filter(task => {
     if (filter === 'Active') return !task.completed;
@@ -16,13 +18,11 @@ export default function TodoLanding() {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 transition-colors duration-200">
-      <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
-        {/* Header with toggle */}
-        <div className="p-6 bg-blue-500 dark:bg-blue-600 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-white">Tasks</h1>
-          <DarkModeToggle />
-        </div>
+      <Navbar tasks={tasks} onOpenLibrary={() => setShowLibrary(true)} />
 
+        <div className="max-w-md mx-auto p-4 pt-24"></div>
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+       
         <div className="p-6">
           <AddTask tasks={tasks} setTasks={setTasks} />
           
