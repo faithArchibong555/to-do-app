@@ -3,7 +3,7 @@ import AddTask from "./components/AddTask";
 import TaskList from "./components/TaskList";
 import DarkModeToggle from "./components/DarkModeToggle";
 import useLocalStorage from "./hooks/useLocalStorage";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar.jsx";
 
 export default function TodoLanding() {
   const [tasks, setTasks] = useLocalStorage("todo-tasks", []);
