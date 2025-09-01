@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import DarkModeToggle from './DarkModeToggle';
 
 const Navbar = ({ tasks, onOpenLibrary }) => {
   const [currentDate, setCurrentDate] = useState('');
@@ -53,6 +54,8 @@ const Navbar = ({ tasks, onOpenLibrary }) => {
 
             {/* Right Section - Action Buttons (Desktop) */}
             <div className="hidden md:flex items-center gap-4">
+              <DarkModeToggle />
+
               {/* Library Button */}
               <button
                 onClick={onOpenLibrary}
@@ -114,6 +117,12 @@ const Navbar = ({ tasks, onOpenLibrary }) => {
               </div>
 
               <div className="flex justify-center gap-6 pt-2">
+                <div className="flex flex-col items-center">
+                  <DarkModeToggle />
+                  <span className="text-xs mt-1 text-gray-600 dark:text-gray-300">Theme</span>
+                </div>
+
+                
                 {/* Library Button */}
                 <button
                   onClick={() => {

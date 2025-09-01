@@ -5,7 +5,7 @@ import './index.css'
 
 // Add dark mode class if previously selected
 if (localStorage.getItem('darkMode') === 'true') {
-  document.documentElement.classList.add('dark')
+  document.documentElement.classList.add('dark');
 }
 
 
