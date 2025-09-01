@@ -4,6 +4,7 @@ import TaskList from "./components/TaskList";
 import DarkModeToggle from "./components/DarkModeToggle";
 import useLocalStorage from "./hooks/useLocalStorage";
 import Navbar from "./components/Navbar.jsx";
+import LibraryPanel from "./components/LibraryPanel.jsx";
 
 export default function TodoLanding() {
   const [tasks, setTasks] = useLocalStorage("todo-tasks", []);
@@ -62,6 +63,15 @@ export default function TodoLanding() {
           )}
         </div>
       </div>
+
+    {showLibrary && (
+      <LibraryPanel
+      isOpen={showLibrary}
+      onClose={() => setShowLibrary(false)}
+      currentTasks={tasks}
+      setCurrentTasks={setTasks}
+      />
+    )}
     </div>
   );
 }
