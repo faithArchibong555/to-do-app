@@ -5,6 +5,9 @@ const Navbar = ({ tasks, onOpenLibrary }) => {
   const [currentDate, setCurrentDate] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+   // Get the app title from environment variables
+  const appTitle = import.meta.env.VITE_APP_TITLE || "Do.It"; // Fallback to "Do.It"
+
   // Calculate task statistics
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter(task => task.completed).length;
@@ -33,10 +36,10 @@ const Navbar = ({ tasks, onOpenLibrary }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             
-            {/* Left Section - Logo */}
+            {/* Left Section - Logo (USING ENV VARIABLE) */}
             <div className="flex-shrink-0">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                To-Do App
+                {appTitle}
               </h1>
             </div>
 
