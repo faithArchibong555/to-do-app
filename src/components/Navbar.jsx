@@ -37,10 +37,16 @@ const Navbar = ({ tasks, onOpenLibrary }) => {
           <div className="flex justify-between items-center h-16">
             
             {/* Left Section - Logo (USING ENV VARIABLE) */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 flex items-center gap-2">
+              <button 
+                onClick={() => window.location.reload()} 
+                className="focus:outline-none"
+              >
+
               <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {appTitle}
               </h1>
+              </button>
             </div>
 
             {/* Center Section - Date & Stats (Desktop) */}
