@@ -7,6 +7,7 @@ const Navbar = ({ tasks, onOpenLibrary }) => {
 
    // Get the app title from environment variables
   const appTitle = import.meta.env.VITE_APP_TITLE || "Do.It"; // Fallback to "Do.It"
+  const appVersion = import.meta.env.VITE_APP_VERSION || "1.0.0";
 
   // Calculate task statistics
   const totalTasks = tasks.length;
@@ -47,6 +48,9 @@ const Navbar = ({ tasks, onOpenLibrary }) => {
                 {appTitle}
               </h1>
               </button>
+              <span className="text-xs text-gray-400 dark:text-gray-500 hidden sm:block">
+                v{appVersion}
+              </span>
             </div>
 
             {/* Center Section - Date & Stats (Desktop) */}
@@ -102,8 +106,9 @@ const Navbar = ({ tasks, onOpenLibrary }) => {
               </button>
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden">
+            {/* Mobile Menu Button + Menu Button */}
+            <div className="md:hidden flex items-center gap-2">
+              <DarkModeToggle />
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -120,6 +125,7 @@ const Navbar = ({ tasks, onOpenLibrary }) => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+
             <div className="px-4 py-3 space-y-3">
               {/* Date & Stats for Mobile */}
               <div className="text-center">
@@ -127,14 +133,13 @@ const Navbar = ({ tasks, onOpenLibrary }) => {
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {totalTasks} tasks • {completedTasks} completed
                 </p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  Version {appVersion}
+                </p>
               </div>
 
               <div className="flex justify-center gap-6 pt-2">
-                <div className="flex flex-col items-center">
-                  <DarkModeToggle />
-                  <span className="text-xs mt-1 text-gray-600 dark:text-gray-300">Theme</span>
-                </div>
-
+            
                 
                 {/* Library Button */}
                 <button
