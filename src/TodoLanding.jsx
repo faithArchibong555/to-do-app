@@ -13,6 +13,31 @@ export default function TodoLanding() {
   const [showLibrary, setShowLibrary] = useState(false);
   const previousTasksRef = useRef([]); // FIXED: Changed from useState to useRef
 
+  // ---- PWA Install Button State ----
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstall, setShowInstall] = useState(false);
+
+  // Listen for beforeinstallprompt
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstall(true);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response: ${outcome}`);
+    setDeferredPrompt(null);
+    setShowInstall(false);
+  };
+
   const filteredTasks = tasks.filter(task => {
     if (filter === 'Active') return !task.completed;
     if (filter === 'Completed') return task.completed;
@@ -139,6 +164,16 @@ export default function TodoLanding() {
               </div>
             ) : (
               <TaskList tasks={filteredTasks} allTasks={tasks} setTasks={setTasks} />
+            )}
+
+            {/* Install Button */}
+            {showInstall && (
+              <button
+                onClick={handleInstallClick}
+                className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg mt-6"
+              >
+                📥 Install App
+              </button>
             )}
           </div>
         </div>
