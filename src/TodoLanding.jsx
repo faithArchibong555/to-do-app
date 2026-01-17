@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import useLocalStorage from "./hooks/useLocalStorage";
 import AddTask from "./components/AddTask";
 import TaskList from "./components/TaskList";
-import DarkModeToggle from "./components/DarkModeToggle";
 import Navbar from "./components/Navbar";
 import LibraryPanel from "./components/LibraryPanel";
 
@@ -11,13 +10,13 @@ export default function TodoLanding() {
   const [taskHistory, setTaskHistory] = useLocalStorage("task-history", []);
   const [filter, setFilter] = useState('All');
   const [showLibrary, setShowLibrary] = useState(false);
-  const previousTasksRef = useRef([]); // FIXED: Changed from useState to useRef
+  const previousTasksRef = useRef([]);
 
   // ---- PWA Install Button State ----
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
 
-  // Listen for beforeinstallprompt
+  // 1. Listen for beforeinstallprompt
   useEffect(() => {
     const handler = (e) => {
       e.preventDefault();
@@ -25,65 +24,70 @@ export default function TodoLanding() {
       setShowInstall(true);
     };
     window.addEventListener("beforeinstallprompt", handler);
-
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
-  const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User response: ${outcome}`);
-    setDeferredPrompt(null);
-    setShowInstall(false);
+ // ---- Auto-Cleanup Logic: Daily Refresh (Archiving) ----
+useEffect(() => {
+  const archiveOldCompletedTasks = () => {
+    const today = new Date().setHours(0, 0, 0, 0);
+
+    setTasks(prevTasks => {
+      return prevTasks.filter(task => {
+        // 1. Keep all Active tasks
+        if (!task.completed) return true;
+
+        // 2. Keep tasks completed TODAY
+        const completionDate = task.completedAt ? new Date(task.completedAt).setHours(0, 0, 0, 0) : today;
+        const isFromPreviousDay = completionDate < today;
+
+        // 3. If it's old, it will be removed from main list. 
+        // Because 'completed' is true, your History Effect will keep it in 'Completed'.
+        return !isFromPreviousDay;
+      });
+    });
   };
 
-  const filteredTasks = tasks.filter(task => {
-    if (filter === 'Active') return !task.completed;
-    if (filter === 'Completed') return task.completed;
-    return true;
-  });
+  archiveOldCompletedTasks();
+  const interval = setInterval(archiveOldCompletedTasks, 3600000); 
+  return () => clearInterval(interval);
+}, [setTasks]);
 
-  // Update task history whenever tasks change
+  // 3. Update task history whenever tasks change
   useEffect(() => {
     const now = new Date().toISOString();
     let updatedHistory = [...taskHistory];
     let hasChanges = false;
 
-    // Check for deleted tasks
-    previousTasksRef.current.forEach(prevTask => {
-      const stillExists = tasks.some(currentTask => currentTask.id === prevTask.id);
-      
-      if (!stillExists) {
-        // Task was deleted - mark it in history
-        const existingInHistory = updatedHistory.find(t => t.id === prevTask.id);
-        
-        if (existingInHistory && !existingInHistory.deleted) {
-          updatedHistory = updatedHistory.map(t => 
-            t.id === prevTask.id 
-              ? { ...t, deleted: true, deletedAt: now }
-              : t
-          );
-          hasChanges = true;
-        } else if (!existingInHistory) {
-          // Task was deleted before being added to history
-          updatedHistory.push({
-            ...prevTask,
-            addedToHistoryAt: now,
-            deleted: true,
-            deletedAt: now
-          });
-          hasChanges = true;
-        }
-      }
-    });
+// Check for deleted tasks
+previousTasksRef.current.forEach(prevTask => {
+  const stillExists = tasks.some(currentTask => currentTask.id === prevTask.id);
+  
+  if (!stillExists) {
+    const existingInHistory = updatedHistory.find(t => t.id === prevTask.id);
+    
+    // MODIFIED LOGIC: 
+    // If the task was COMPLETED when it disappeared, DO NOT mark it as deleted.
+    // This keeps it in the "Completed" tab of your LibraryPanel.
+    if (prevTask.completed) {
+      hasChanges = false; // It stays in history exactly as it was: completed.
+    } else if (existingInHistory && !existingInHistory.deleted) {
+      // It was an active task that was manually deleted
+      updatedHistory = updatedHistory.map(t => 
+        t.id === prevTask.id 
+          ? { ...t, deleted: true, deletedAt: now }
+          : t
+      );
+      hasChanges = true;
+    }
+  }
+});
 
     // Check for new or modified tasks
     tasks.forEach(currentTask => {
       const existingInHistory = updatedHistory.find(t => t.id === currentTask.id);
       
       if (!existingInHistory) {
-        // New task - add to history
         updatedHistory.push({
           ...currentTask,
           addedToHistoryAt: now,
@@ -91,7 +95,6 @@ export default function TodoLanding() {
         });
         hasChanges = true;
       } else {
-        // Check for changes in completion status or text
         if (existingInHistory.completed !== currentTask.completed ||
             existingInHistory.text !== currentTask.text) {
           updatedHistory = updatedHistory.map(t => 
@@ -101,19 +104,16 @@ export default function TodoLanding() {
                   completed: currentTask.completed,
                   text: currentTask.text,
                   completedAt: currentTask.completed ? now : t.completedAt,
-                  deleted: false // Ensure it's not marked as deleted
+                  deleted: false 
                 }
               : t
           );
           hasChanges = true;
         }
         
-        // If task was previously deleted but now exists again, unmark as deleted
         if (existingInHistory.deleted) {
           updatedHistory = updatedHistory.map(t => 
-            t.id === currentTask.id 
-              ? { ...t, deleted: false, deletedAt: null }
-              : t
+            t.id === currentTask.id ? { ...t, deleted: false, deletedAt: null } : t
           );
           hasChanges = true;
         }
@@ -124,9 +124,22 @@ export default function TodoLanding() {
       setTaskHistory(updatedHistory);
     }
     
-    // Update the previous tasks reference
     previousTasksRef.current = tasks;
-  }, [tasks, taskHistory]); // Added taskHistory to dependencies
+  }, [tasks, taskHistory, setTaskHistory]);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    setDeferredPrompt(null);
+    setShowInstall(false);
+  };
+
+  const filteredTasks = tasks.filter(task => {
+    if (filter === 'Active') return !task.completed;
+    if (filter === 'Completed') return task.completed;
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
@@ -166,7 +179,6 @@ export default function TodoLanding() {
               <TaskList tasks={filteredTasks} allTasks={tasks} setTasks={setTasks} />
             )}
 
-            {/* Install Button */}
             {showInstall && (
               <button
                 onClick={handleInstallClick}
@@ -179,7 +191,6 @@ export default function TodoLanding() {
         </div>
       </div>
 
-      {/* Library Panel */}
       {showLibrary && (
         <LibraryPanel
           isOpen={showLibrary}

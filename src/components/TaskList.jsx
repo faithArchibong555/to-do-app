@@ -1,11 +1,17 @@
 import { useState } from 'react'
 
 const TaskList = ({ tasks, allTasks, setTasks }) => {
-  const toggleTask = (id) => {
-    setTasks(allTasks.map(task => 
-      task.id === id ? { ...task, completed: !task.completed } : task
-    ))
-  }
+ const toggleTask = (id) => {
+  setTasks(allTasks.map(task => 
+    task.id === id 
+      ? { 
+          ...task, 
+          completed: !task.completed, 
+          completedAt: !task.completed ? new Date().toISOString() : null 
+        } 
+      : task
+  ))
+}
 
   const deleteTask = (id) => {
     setTasks(allTasks.filter(task => task.id !== id))
