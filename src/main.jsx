@@ -14,3 +14,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <TodoLanding />  {/* No App.jsx wrapper needed */}
   </React.StrictMode>
 );
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload()
+  })
+}

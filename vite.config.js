@@ -7,6 +7,41 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+
+      workbox: {
+        clientsClaim: true,
+        skipWaiting: true,
+
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) =>
+              request.destination === 'document' ||
+              request.destination === 'script' ||
+              request.destination === 'style',
+
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'assets-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days (your original)
+              }
+            }
+          },
+          {
+            urlPattern: ({ request }) => request.destination === 'image',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'image-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 30
+              }
+            }
+          }
+        ]
+      },
+
       manifest: {
         name: 'Do.It App',
         short_name: 'Do.It',
@@ -39,32 +74,6 @@ export default defineConfig({
             sizes: '510x1080',
             type: 'image/png',
             form_factor: 'narrow'
-          }
-        ]
-      },
-      workbox: {
-        runtimeCaching: [
-          {
-            urlPattern: ({ request }) => request.destination === 'document' || request.destination === 'script' || request.destination === 'style',
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'assets-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-              }
-            }
-          },
-          {
-            urlPattern: ({ request }) => request.destination === 'image',
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'image-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 30
-              }
-            }
           }
         ]
       }
