@@ -2,6 +2,8 @@ import { useState } from "react";
 
 export default function AddTask({ tasks, setTasks }) {
   const [input, setInput] = useState("");
+  const [deadline, setDeadline] = useState("");
+
 
   const handleAddTask = () => {
     const trimmedInput = input.trim();
@@ -16,7 +18,17 @@ export default function AddTask({ tasks, setTasks }) {
       return;
     }
 
-    setTasks([...tasks, { id: Date.now(), text: trimmedInput, completed: false }]);
+    setTasks([
+  ...tasks,
+  {
+    id: Date.now(),
+    text: trimmedInput,
+    completed: false,
+    deadline: deadline || null,
+    notified: false,
+  },
+]);
+
     setInput("");
   };
 
@@ -30,6 +42,14 @@ export default function AddTask({ tasks, setTasks }) {
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
       />
+
+      <input
+       type="datetime-local"
+       value={deadline}
+       onChange={(e) => setDeadline(e.target.value)}
+       className="mt-2 w-full rounded-lg border px-3 py-2 text-sm"
+      />
+
       <button
         onClick={handleAddTask}
         className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
