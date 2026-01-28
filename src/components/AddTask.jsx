@@ -37,40 +37,40 @@ export default function AddTask({ tasks, setTasks }) {
 
   return (
     <div className="flex gap-2 mb-6 w-full items-center">
-      {/* Text input */}
-      <input
-        type="text"
-        placeholder="What needs to be done?"
-        className="flex-1 min-w-0 p-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
-      />
+  {/* Task text */}
+  <input
+    type="text"
+    placeholder="What needs to be done?"
+    className="flex-1 min-w-0 p-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+    value={input}
+    onChange={(e) => setInput(e.target.value)}
+    onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
+  />
 
-      {/* Calendar & Clock icon */}
-      <button
-        onClick={() => deadlineRef.current?.showPicker?.()} // opens native picker
-        className="p-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 text-lg"
-      >
-        🗓️⏰
-      </button>
-
-      {/* Hidden datetime input */}
-      <input
-        ref={deadlineRef}
-        type="datetime-local"
-        value={deadline}
-        onChange={(e) => setDeadline(e.target.value)}
-        className="hidden"
-      />
-
-      {/* Add button */}
-      <button
-        onClick={handleAddTask}
-        className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-      >
-        +
-      </button>
+  {/* Deadline icon wrapper */}
+  <div className="relative">
+    {/* Icon */}
+    <div className="p-2 border border-gray-300 rounded text-lg pointer-events-none">
+      🗓️⏰
     </div>
+
+    {/* REAL datetime input (invisible but clickable) */}
+    <input
+      type="datetime-local"
+      value={deadline}
+      onChange={(e) => setDeadline(e.target.value)}
+      className="absolute inset-0 opacity-0"
+    />
+  </div>
+
+  {/* Add button */}
+  <button
+    onClick={handleAddTask}
+    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+  >
+    +
+  </button>
+</div>
+
   );
 }
