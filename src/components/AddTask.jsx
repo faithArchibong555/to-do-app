@@ -50,7 +50,7 @@ export default function AddTask({ tasks, setTasks }) {
   {/* Deadline icon */}
   <div className="relative w-10 h-10 flex items-center justify-center border border-gray-300 rounded">
     {/* Icon */}
-    <span className="text-lg pointer-events-none">🗓️⏰</span>
+    <span className="text-lg pointer-events-none">⏰</span>
 
     {/* Invisible but clickable input */}
     <input
