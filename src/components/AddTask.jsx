@@ -36,8 +36,8 @@ export default function AddTask({ tasks, setTasks }) {
   };
 
   return (
-    <div className="flex gap-2 mb-6 w-full items-center">
-  {/* Task text */}
+ <div className="flex gap-2 mb-6 w-full items-center">
+  {/* Task input */}
   <input
     type="text"
     placeholder="What needs to be done?"
@@ -47,26 +47,24 @@ export default function AddTask({ tasks, setTasks }) {
     onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
   />
 
-  {/* Deadline icon wrapper */}
-  <div className="relative">
+  {/* Deadline icon */}
+  <div className="relative w-10 h-10 flex items-center justify-center border border-gray-300 rounded">
     {/* Icon */}
-    <div className="p-2 border border-gray-300 rounded text-lg pointer-events-none">
-      🗓️⏰
-    </div>
+    <span className="text-lg pointer-events-none">🗓️⏰</span>
 
-    {/* REAL datetime input (invisible but clickable) */}
+    {/* Invisible but clickable input */}
     <input
       type="datetime-local"
       value={deadline}
       onChange={(e) => setDeadline(e.target.value)}
-      className="absolute inset-0 opacity-0"
+      className="absolute inset-0 opacity-0 w-full h-full"
     />
   </div>
 
   {/* Add button */}
   <button
     onClick={handleAddTask}
-    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 w-10 h-10 flex items-center justify-center"
   >
     +
   </button>
