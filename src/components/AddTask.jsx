@@ -29,6 +29,9 @@ export default function AddTask({ tasks, setTasks }) {
   },
 ]);
 
+  setDeadline("");
+
+
     setInput("");
   };
 
@@ -44,11 +47,12 @@ export default function AddTask({ tasks, setTasks }) {
       />
 
       <input
-       type="datetime-local"
-       value={deadline}
-       onChange={(e) => setDeadline(e.target.value)}
-       className="mt-2 w-full rounded-lg border px-3 py-2 text-sm"
+      type="datetime-local"
+      value={deadline}
+      onChange={(e) => setDeadline(e.target.value)}
+      className="p-2 border border-gray-300 rounded text-sm max-w-[135px]"
       />
+
 
       <button
         onClick={handleAddTask}

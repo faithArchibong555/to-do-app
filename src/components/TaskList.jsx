@@ -17,6 +17,8 @@ const TaskList = ({ tasks, allTasks, setTasks }) => {
     setTasks(allTasks.filter(task => task.id !== id))
   }
 
+  
+
   return (
     <div className="space-y-2">
       {tasks.map((task) => (
@@ -31,10 +33,26 @@ const TaskList = ({ tasks, allTasks, setTasks }) => {
               onChange={() => toggleTask(task.id)}
               className="h-5 w-5 rounded border-gray-300 text-blue-500 focus:ring-blue-500 dark:border-gray-500"
             />
-            <span className={`${task.completed ? 'line-through text-gray-400' : 'text-gray-800 dark:text-gray-200'}`}>
-              {task.text}
-            </span>
+            <div className="flex flex-col">
+            <span
+            className={`${
+            task.completed
+            ? 'line-through text-gray-400'
+            : 'text-gray-800 dark:text-gray-200'
+            }`}
+            >
+             {task.text}
+           </span>
+
+           {task.deadline && (
+             <span className="text-xs text-gray-500">
+             ⏰ {new Date(task.deadline).toLocaleString()}
+           </span>
+            )}
+           </div>
+
           </div>
+          
           <button 
             onClick={() => deleteTask(task.id)}
             className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-1"
